@@ -11,13 +11,17 @@ const datasets: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         secretAccessKey: process.env.SECRET_KEY,
     })
 
+    fastify.get('/dataset', async function (request, reply) {
+        reply.code(200).send({ message: ' Datasets api route' })
+    })
+
     fastify.post('/dataset', async function (request: any, reply) {
-        const encodedDataset = await request.body.upload
-            .toBuffer()
-            .toString('base64')
+        const data = await request.file()
+
+        const buffer = await data.toBuffer().toString('base64')
 
         const params = {
-            Body: encodedDataset,
+            Body: buffer,
             Bucket: 'kobra',
             Key: uuid(),
         }
@@ -44,13 +48,27 @@ const datasets: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
             let dataset: any = data.Body
 
-            try {
-                dataset = await dataset.toString('utf-8')
-                reply.send({ dataset })
-            } catch (error) {}
-        })
+            console.log({ dataset })
 
-        reply.status(200).send({ success: true, params })
+            dataset = dataset.toString()
+
+            const data_decoded = Buffer.from(
+                `data:image/jpeg:base64,${dataset}`,
+            )
+            return reply.send({ dataset: data_decoded })
+        })
+    })
+
+    //TODO: update the buffer
+
+    fastify.put('/dataset/:id', async function (request, reply) {
+        reply.send({ message: 'updated' })
+    })
+
+    //TODO: Todo delete a buffer
+
+    fastify.delete('/dataset/:id', async function (request, reply) {
+        reply.send({ message: 'delete api here' })
     })
 
     fastify.post('/dataset/url', async function (request: any, reply) {

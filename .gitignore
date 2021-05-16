@@ -44,7 +44,6 @@ profile-*
 
 # vim swap files
 *.swp
-
 # webstorm
 .idea
 
@@ -64,3 +63,6 @@ test/types/index.js
 # compiled app
 dist
 .env
+
+# Firebase
+firebase-key.json
