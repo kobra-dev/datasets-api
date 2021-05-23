@@ -1,8 +1,8 @@
 import { FastifyPluginAsync } from 'fastify'
-import { getFileByType, uploadFile } from '../utils/s3'
+import { getFileByKey, uploadFile } from '../utils/s3'
 
 const datasets: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-    fastify.get('/dataset', async function (request, reply) {
+    fastify.get('/dataset', function (request, reply) {
         reply.code(200).send({ message: ' Datasets api route' })
     })
 
@@ -30,9 +30,9 @@ const datasets: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     fastify.get('/dataset/:key', async function (request: any, reply) {
         const key = request.params.key
 
-        const readStream = getFileByType(key)
+        const readStream = getFileByKey(key)
 
-        reply.send({ readStream })
+        reply.send(readStream)
     })
 
     //TODO: update the buffer

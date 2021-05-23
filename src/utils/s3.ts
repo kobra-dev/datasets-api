@@ -24,7 +24,7 @@ export async function uploadFile(file: any): Promise<any> {
     return s3.upload(uploadParams).promise()
 }
 
-export function getFileByType(fileKey: string) {
+export function getFileByKey(fileKey: string) {
     const get_params: GetObjectRequest = {
         Key: fileKey,
         Bucket: bucketName as string,
