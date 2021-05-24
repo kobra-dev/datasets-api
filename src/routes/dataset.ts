@@ -35,38 +35,29 @@ const datasets: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         reply.send(readStream)
     })
 
-    //TODO: update the buffer
-    // fastify.put('/dataset/:id', async function (request, reply) {
-    //    reply.send({ message: 'updated' })
-    // })
-
-    //TODO: Todo delete a buffer
-
-    //fastify.delete('/dataset/:id', async function (request, reply) {
-    //    reply.send({ message: 'delete api here' })
-    //})
-
-    /*
- *
+    /**
+     *
+     * TODO: Handle uploading file from url
     fastify.post('/dataset/url', async function (request: any, reply) {
         const { url } = request.body
 
-        if (!isURL(url))
-            reply
-                .status(404)
-                .send({ sucess: true, message: 'Invalid url passed' })
+        let file
 
-        //TODO: fix file downloading
-        const file = http.get(url, function (resp) {
-            console.log(resp)
-        })
-        console.log({ file })
+        try {
+            file = fs.createReadStream(url)
+        } catch (errr) {
+            reply.send({
+                message: 'Fialed to parse file',
+            })
+        }
+
+        const uploadResults = await uploadFile(file)
 
         reply.status(200).send({
             success: true,
+            key: uploadResults.key,
         })
     })
-    *
     */
 }
 
