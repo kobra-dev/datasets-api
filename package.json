@@ -49,7 +49,7 @@
     "@typescript-eslint/parser": "4.23.0",
     "concurrently": "6.1.0",
     "cross-env": "7.0.3",
-    "dts-gen": "^0.6.0",
+    "dts-gen": "0.6.0",
     "eslint": "7.26.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.0",
