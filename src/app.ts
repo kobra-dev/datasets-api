@@ -4,6 +4,7 @@ import fastifyMultipart from 'fastify-multipart'
 import { join } from 'path'
 import FireBaseAdmin from 'firebase-admin'
 import fs from 'fs'
+import fastfyCors from 'fastify-cors'
 
 export type AppOptions = {} & Partial<AutoloadPluginOptions>
 
@@ -17,6 +18,11 @@ const app: FastifyPluginAsync<AppOptions> = async (
     fastify,
     opts,
 ): Promise<void> => {
+    void fastify.register(fastfyCors, (instance) => (req, callback) => {
+        let corsOption = { origin: true }
+        callback(null, corsOption)
+    })
+
     void fastify.addHook('onRequest', (request: any, reply, done) => {
         const token = request.headers.authorization
         let user: FireBaseAdmin.auth.DecodedIdToken | undefined = undefined
