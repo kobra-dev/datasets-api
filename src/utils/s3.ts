@@ -1,6 +1,10 @@
 import dotenv from 'dotenv'
-import S3, { GetObjectRequest, PutObjectRequest } from 'aws-sdk/clients/s3'
-import { v4 as uuid } from 'uuid'
+import S3, {
+    GetObjectRequest,
+    HeadObjectRequest,
+    PutObjectRequest,
+} from 'aws-sdk/clients/s3'
+import { hashString } from './helpers'
 
 dotenv.config()
 
@@ -18,7 +22,19 @@ export async function uploadFile(file: any): Promise<any> {
     const uploadParams: PutObjectRequest = {
         Bucket: bucketName as string,
         Body: fileStream as any,
-        Key: uuid(),
+        Key: hashString(file.filename),
+    }
+
+    return s3.upload(uploadParams).promise()
+}
+
+export async function updateFile(file: any, Key: string): Promise<any> {
+    const fileStream = file.file
+
+    const uploadParams: PutObjectRequest = {
+        Bucket: bucketName as string,
+        Body: fileStream as any,
+        Key,
     }
 
     return s3.upload(uploadParams).promise()
@@ -31,4 +47,37 @@ export function getFileByKey(fileKey: string) {
     }
 
     return s3.getObject(get_params).createReadStream()
+}
+
+export async function doesFileExists(Key: string): Promise<boolean> {
+    try {
+        const params: HeadObjectRequest = {
+            Bucket: bucketName as string,
+            Key,
+        }
+        const headCode = await s3.headObject(params).promise()
+
+        if (headCode.ETag) {
+            return true
+        }
+
+        return false
+    } catch (error) {
+        return false
+    }
+}
+
+export async function deleteObject(Key: string): Promise<boolean> {
+    try {
+        const params = {
+            Bucket: bucketName as string,
+            Key,
+        }
+
+        await s3.deleteObject(params).promise()
+
+        return true
+    } catch (error) {
+        return false
+    }
 }
