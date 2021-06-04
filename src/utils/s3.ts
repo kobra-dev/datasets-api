@@ -16,13 +16,13 @@ const s3 = new S3({
     secretAccessKey: process.env.SECRET_KEY,
 })
 
-export async function uploadFile(file: any): Promise<any> {
+export async function uploadFile(file: any, userId: string): Promise<any> {
     const fileStream = file.file
 
     const uploadParams: PutObjectRequest = {
         Bucket: bucketName as string,
         Body: fileStream as any,
-        Key: hashString(file.filename),
+        Key: hashString(file.filename + '@' + userId),
     }
 
     return s3.upload(uploadParams).promise()

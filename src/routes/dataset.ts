@@ -6,7 +6,6 @@ import {
     uploadFile,
     updateFile,
 } from '../utils/s3'
-import { hashString } from '../utils/helpers'
 
 const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
     fastify.get('/dataset', function (_, reply) {
@@ -25,13 +24,7 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
                 message: 'Invalid dataset file',
             })
         }
-
-        const checkExistance = await doesFileExists(hashString(data.filename))
-
-        if (checkExistance)
-            reply.status(401).send({ message: 'Dataset already exists' })
-
-        const uploadResult = await uploadFile(data)
+        const uploadResult = await uploadFile(data, request.user.uid)
 
         reply.status(201).send({
             message: 'file uploaded successfully',
@@ -77,6 +70,8 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
         }
 
         const doesObjectExists = await doesFileExists(key)
+
+        console.log({ doesFileExists })
 
         if (!doesObjectExists)
             reply.status(404).send({ message: "File doesn't exists" })

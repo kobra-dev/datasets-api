@@ -18,33 +18,35 @@ const app: FastifyPluginAsync<AppOptions> = async (
     fastify,
     opts,
 ): Promise<void> => {
-    void fastify.register(fastfyCors, (instance) => (req, callback) => {
-        let corsOption = { origin: true }
-        callback(null, corsOption)
-    })
+    void fastify.register(
+        fastfyCors,
+        (instance) => (req: any, callback: any) => {
+            const corsOption = { origin: true }
+            callback(null, corsOption)
+        },
+    )
 
-    void fastify.addHook('onRequest', (request: any, reply, done) => {
+    void fastify.addHook('onRequest', async (request: any, reply) => {
         const token = request.headers.authorization
-        let user: FireBaseAdmin.auth.DecodedIdToken | undefined = undefined
+        let user: FireBaseAdmin.auth.DecodedIdToken | undefined
 
         if (token !== undefined) {
-            FireBaseAdmin.auth()
-                .verifyIdToken(token)
-                .then((userResp) => (user = userResp))
-                .catch((error) => reply.send({ message: 'Invalid auth token' }))
+            try {
+                user = await FireBaseAdmin.auth().verifyIdToken(token)
+            } catch (error) {
+                console.log({ error })
+            }
         } else {
             reply.send({ message: 'Not authorized' })
         }
 
         request.user = user
-
-        done()
     })
 
     void fastify.register(fastifyMultipart, {
         limits: {
             files: 1, // Maximum number of files
-            fieldSize: 1000000, // Maximum number of bytes,
+            fieldSize: 100000000, // Maximum number of bytes,
             fieldNameSize: 100,
         },
     })
