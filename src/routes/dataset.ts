@@ -36,7 +36,10 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
         )
 
         if (doesObjectExists)
-            reply.status(404).send({ message: 'File already exists!' })
+            reply.status(404).send({
+                message: 'File already exists!',
+                key: hashString(data.filename + '@' + request.user.uid),
+            })
 
         const uploadResult = await uploadFile(data, request.user.uid)
 
