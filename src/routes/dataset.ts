@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import { hashString } from '../utils/helpers'
 import {
     getFileByKey,
     deleteObject,
@@ -15,6 +16,11 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
     fastify.post('/dataset', async function (request: any, reply) {
         const data = await request.file()
 
+        if (!data)
+            reply.status(400).send({
+                message: 'No dataset uploaded',
+            })
+
         const extension = data.filename.split('.').pop()
 
         const allowedExtensions = ['xls', 'csv', 'xlsx', 'xlxb']
@@ -24,6 +30,14 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
                 message: 'Invalid dataset file',
             })
         }
+
+        const doesObjectExists = await doesFileExists(
+            hashString(data.filename + '@' + request.user.uid),
+        )
+
+        if (doesObjectExists)
+            reply.status(404).send({ message: 'File already exists!' })
+
         const uploadResult = await uploadFile(data, request.user.uid)
 
         reply.status(201).send({
@@ -70,8 +84,6 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
         }
 
         const doesObjectExists = await doesFileExists(key)
-
-        console.log({ doesFileExists })
 
         if (!doesObjectExists)
             reply.status(404).send({ message: "File doesn't exists" })
