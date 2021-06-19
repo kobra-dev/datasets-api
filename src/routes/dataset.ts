@@ -9,7 +9,7 @@ import {
 } from '../utils/s3'
 
 const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
-    fastify.get('/dataset', function (_, reply) {
+    fastify.get('/dataset', (_, reply) => {
         reply.code(200).send({ message: ' Datasets api route' })
     })
 
