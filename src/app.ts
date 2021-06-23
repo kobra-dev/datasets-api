@@ -9,6 +9,8 @@ import fastfyCors from 'fastify-cors'
 export type AppOptions = Record<string, unknown> &
     Partial<AutoloadPluginOptions>
 
+let firebaseConfig;
+    
 try {
   firebaseConfig = fs.readFileSync("./firebase-key.json", "utf-8");
 } catch (err) {
