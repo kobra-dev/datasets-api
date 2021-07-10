@@ -14,6 +14,11 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
     })
 
     fastify.post('/dataset', async function (request: any, reply) {
+        if (!request.user)
+            reply.status(401).send({
+                message: 'Not authorized',
+            })
+
         const data = await request.file()
 
         if (!data)
