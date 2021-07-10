@@ -1,10 +1,11 @@
 import { FastifyPluginAsync } from 'fastify'
-import { hashString } from '../utils/helpers'
+//import { hashString } from '../utils/helpers'
 import {
     getFileByKey,
     deleteObject,
     doesFileExists,
-    uploadFile,
+    //uploadFile,
+    createMultipart,
     updateFile,
 } from '../utils/s3'
 
@@ -14,44 +15,50 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
     })
 
     fastify.post('/dataset', async function (request: any, reply) {
-        if (!request.user)
-            reply.status(401).send({
-                message: 'Not authorized',
-            })
-
         const data = await request.file()
 
-        if (!data)
-            reply.status(400).send({
-                message: 'No dataset uploaded',
-            })
+        createMultipart(data, 'yoo')
 
-        const extension = data.filename.split('.').pop()
+        reply.status(200).send({ message: 'It works' })
 
-        const allowedExtensions = ['xls', 'csv', 'xlsx', 'xlxb']
+        // if (!request.user)
+        //     reply.status(401).send({
+        //         message: 'Not authorized',
+        //     })
 
-        if (!allowedExtensions.includes(extension.toLowerCase())) {
-            reply.status(400).send({
-                message: 'Invalid dataset file',
-            })
-        }
+        // const data = await request.file()
 
-        const doesObjectExists = await doesFileExists(
-            hashString(data.filename + '@' + request.user.uid),
-        )
+        // if (!data)
+        //     reply.status(400).send({
+        //         message: 'No dataset uploaded',
+        //     })
 
-        if (doesObjectExists)
-            reply.status(404).send({
-                message: 'File already exists!',
-                key: hashString(data.filename + '@' + request.user.uid),
-            })
+        // const extension = data.filename.split('.').pop()
 
-        const uploadResult = await uploadFile(data, request.user.uid)
+        // const allowedExtensions = ['xls', 'csv', 'xlsx', 'xlxb']
 
-        reply.status(201).send({
-            message: 'file uploaded successfully',
-            Key: uploadResult.key,
-        })
+        // if (!allowedExtensions.includes(extension.toLowerCase())) {
+        //     reply.status(400).send({
+        //         message: 'Invalid dataset file',
+        //     })
+        // }
+
+        // const doesObjectExists = await doesFileExists(
+        //     hashString(data.filename + '@' + request.user.uid),
+        // )
+
+        // if (doesObjectExists)
+        //     reply.status(404).send({
+        //         message: 'File already exists!',
+        //         key: hashString(data.filename + '@' + request.user.uid),
+        //     })
+
+        // const uploadResult = await uploadFile(data, request.user.uid)
+
+        // reply.status(201).send({
+        //     message: 'file uploaded successfully',
+        //     Key: uploadResult.key,
+        // })
     })
 
     fastify.get('/dataset/:key', async function (request: any, reply) {

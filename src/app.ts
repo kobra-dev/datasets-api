@@ -81,16 +81,17 @@ const app: FastifyPluginAsync<AppOptions> = async (
     })
 
     void fastify.addHook('onRequest', async (request: any, reply) => {
-        const token = request.headers.authorization
+        //const token = request.headers.authorization
         let user: FireBaseAdmin.auth.DecodedIdToken | undefined
 
-        if (request.url !== '/docs') {
-            try {
-                user = await FireBaseAdmin.auth().verifyIdToken(token)
-            } catch (error) {
-                reply.send({ message: 'Not authorized' })
-            }
-        }
+        // if (request.url !== '/docs') {
+        //     try {
+        //         user = await FireBaseAdmin.auth().verifyIdToken(token)
+        //     } catch (error) {
+        //         reply.send({ message: 'Not authorized' })
+        //     }
+        // }
+
         request.user = user
     })
 
