@@ -76,15 +76,13 @@ const app: FastifyPluginAsync<AppOptions> = async (
         const token = request.headers.authorization
         let user: FireBaseAdmin.auth.DecodedIdToken | undefined
 
-        if (token !== undefined || request.url != '/docs') {
+        if (token === undefined && request.url !== '/docs') {
             try {
                 user = await FireBaseAdmin.auth().verifyIdToken(token)
             } catch (error) {
-                console.log({ error })
+                reply.send({ message: 'Not authorized' })
             }
             request.user = user
-        } else {
-            reply.send({ message: 'Not authorized' })
         }
     })
 
