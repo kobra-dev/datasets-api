@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify'
 import AutoLoad, { AutoloadPluginOptions } from 'fastify-autoload'
-import fastifyMultipart from 'fastify-multipart'
+// import fastifyMultipart from 'fastify-multipart'
 import { join } from 'path'
 import FireBaseAdmin from 'firebase-admin'
 import fs from 'fs'
@@ -76,21 +76,20 @@ const app: FastifyPluginAsync<AppOptions> = async (
         const token = request.headers.authorization
         let user: FireBaseAdmin.auth.DecodedIdToken | undefined
 
-        if (token === undefined && request.url !== '/docs') {
+        if (request.url !== '/docs') {
             try {
                 user = await FireBaseAdmin.auth().verifyIdToken(token)
             } catch (error) {
                 reply.send({ message: 'Not authorized' })
             }
-            request.user = user
         }
+        request.user = user
     })
 
-    void fastify.register(fastifyMultipart, {
+    void fastify.register(require('fastify-multipart'), {
         limits: {
             files: 1, // Maximum number of files
-            fieldSize: 100000000, // Maximum number of bytes,
-            fieldNameSize: 100,
+            fieldSize: 2097152, // Maximum number of bytes(2MB),
         },
     })
 
