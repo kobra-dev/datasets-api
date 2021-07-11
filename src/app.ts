@@ -73,16 +73,16 @@ const app: FastifyPluginAsync<AppOptions> = async (
     })
 
     void fastify.addHook('onRequest', async (request: any, reply) => {
-        //const token = request.headers.authorization
+        const token = request.headers.authorization
         let user: FireBaseAdmin.auth.DecodedIdToken | undefined
 
-        // if (request.url !== '/docs') {
-        //     try {
-        //         user = await FireBaseAdmin.auth().verifyIdToken(token)
-        //     } catch (error) {
-        //         reply.send({ message: 'Not authorized' })
-        //     }
-        // }
+        if (request.url !== '/docs') {
+            try {
+                user = await FireBaseAdmin.auth().verifyIdToken(token)
+            } catch (error) {
+                reply.send({ message: 'Not authorized' })
+            }
+        }
 
         request.user = user
     })
@@ -90,7 +90,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     void fastify.register(require('fastify-multipart'), {
         limits: {
             files: 1, // Maximum number of files
-            fieldSize: 2097152, // Maximum number of bytes(2MB),
+            fileSize: 1024 * 1024 * 2, // Maximum number of bytes(2MB),
         },
     })
 

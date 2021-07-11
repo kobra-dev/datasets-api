@@ -82,9 +82,9 @@ export async function deleteObject(Key: string): Promise<boolean> {
     }
 }
 
-export async function createMultipart(file: any, Key: string) {
-    // TODO:
-    // Divide a file to upload into chunks
-    // Upload  chunk one by one
-    // Complete file uploading
-}
+//export async function createMultipart(file: any, Key: string) {
+// TODO:
+// Divide a file to upload into chunks
+// Upload  chunk one by one
+// Complete file uploading
+//}
