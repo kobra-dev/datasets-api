@@ -39,7 +39,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
         if (/(localhost|ngrok|127.0.0.1)/g.test(originHostname)) {
             corsOptions.origin = true
         } else {
-            corsOptions.origin = false
+            corsOptions.origin = true
         }
         callback(null, corsOptions)
     })

@@ -10,7 +10,7 @@ import {
 
 const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
     fastify.get('/dataset', (_, reply) => {
-        reply.code(200).send({ message: ' Datasets api route' })
+        reply.code(200).send({ message: 'Datasets api route' })
     })
 
     fastify.post('/dataset', async function (request: any, reply) {
