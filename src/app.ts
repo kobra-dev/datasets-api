@@ -28,7 +28,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     opts,
 ): Promise<void> => {
     void fastify.register(fastfyCors, () => (req: any, callback: any) => {
-        const corsOption = { origin: true }
+        const corsOption = { origin: false }
         callback(null, corsOption)
     })
 
