@@ -1,7 +1,7 @@
-import { FastifyPluginAsync } from 'fastify'
-import AutoLoad, { AutoloadPluginOptions } from 'fastify-autoload'
+import {FastifyPluginAsync} from 'fastify'
+import AutoLoad, {AutoloadPluginOptions} from 'fastify-autoload'
 // import fastifyMultipart from 'fastify-multipart'
-import { join } from 'path'
+import {join} from 'path'
 import FireBaseAdmin from 'firebase-admin'
 import fs from 'fs'
 import fastfyCors from 'fastify-cors'
@@ -9,16 +9,16 @@ import fastfyCors from 'fastify-cors'
 export type AppOptions = Record<string, unknown> &
     Partial<AutoloadPluginOptions>
 
-let firebaseConfig;
-    
+let firebaseConfig
+
 try {
-  firebaseConfig = fs.readFileSync("./firebase-key.json", "utf-8");
+    firebaseConfig = fs.readFileSync('./firebase-key.json', 'utf-8')
 } catch (err) {
-  let c = process.env.FIREBASE_CONFIG;
-  if (!c) throw err;
-  firebaseConfig = c;
+    let c = process.env.FIREBASE_CONFIG
+    if (!c) throw err
+    firebaseConfig = c
 }
-    
+
 FireBaseAdmin.initializeApp({
     credential: FireBaseAdmin.credential.cert(JSON.parse(firebaseConfig)),
 })
@@ -28,8 +28,20 @@ const app: FastifyPluginAsync<AppOptions> = async (
     opts,
 ): Promise<void> => {
     void fastify.register(fastfyCors, () => (req: any, callback: any) => {
-        const corsOption = { origin: true }
-        callback(null, corsOption)
+        const corsOptions = {
+            credentials: true,
+            allowedHeaders: [
+                'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+            ],
+            origin: false,
+        }
+        const originHostname = req.headers.origin || req.ip || ''
+        if (/(localhost|ngrok|127.0.0.1)/g.test(originHostname)) {
+            corsOptions.origin = true
+        } else {
+            corsOptions.origin = false
+        }
+        callback(null, corsOptions)
     })
 
     void fastify.register(require('fastify-swagger'), {
@@ -59,7 +71,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
                     type: 'object',
                     required: ['key'],
                     properties: {
-                        Key: { type: 'string' },
+                        Key: {type: 'string'},
                     },
                 },
             },
@@ -88,7 +100,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
             try {
                 user = await FireBaseAdmin.auth().verifyIdToken(token)
             } catch (error) {
-                reply.send({ message: 'Not authorized' })
+                reply.send({message: 'Not authorized'})
             }
         }
         request.user = user
@@ -113,4 +125,4 @@ const app: FastifyPluginAsync<AppOptions> = async (
 }
 
 export default app
-export { app }
+export {app}
