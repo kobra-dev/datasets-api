@@ -31,10 +31,6 @@ const datasets: FastifyPluginAsync = async (fastify, _): Promise<void> => {
 
         console.log(data.file)
 
-        //         const fileSize = fs.statSync(data.file)
-
-        //         console.log(fileSize.size)
-
         if (!data)
             reply.status(400).send({
                 message: 'No dataset uploaded',
